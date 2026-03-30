@@ -9,7 +9,7 @@ class AdvancedAudioMotorNet(nn.Module):
         self.fc1 = nn.Linear(input_dim, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, output_dim)
         self.shortcut = nn.Linear(input_dim, output_dim)
-        self.alpha = alpha  # Hebbian strength
+        self.alpha = alpha
 
     def forward(self, x):
         cognitive = F.relu(self.fc1(x))
@@ -18,7 +18,6 @@ class AdvancedAudioMotorNet(nn.Module):
         return cognitive + shortcut, cognitive, shortcut
 
     def hebbian_update(self, x, y):
-        # Hebbian rule: outer product
-        
         hebb = torch.matmul(y.T, x) / x.shape[0]
-        self.shortcut.weight.data += self.alpha * hebb
+        with torch.no_grad():
+            self.shortcut.weight += self.alpha * hebb

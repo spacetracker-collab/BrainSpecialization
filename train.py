@@ -15,22 +15,19 @@ def train():
     loss_fn = torch.nn.MSELoss()
 
     X, Y = generate_data()
-
     history = []
 
     for epoch in range(300):
         optimizer.zero_grad()
         pred, cognitive, shortcut = model(X)
 
-        # Energy penalty (encourage shortcut)
         energy = cognitive.norm()
-
         loss = loss_fn(pred, Y) + 0.001 * energy
+
         loss.backward()
         optimizer.step()
 
-        # Hebbian update
-        model.hebbian_update(X, Y)
+        model.hebbian_update(X, pred.detach())
 
         with torch.no_grad():
             shortcut_norm = model.shortcut.weight.norm().item()
