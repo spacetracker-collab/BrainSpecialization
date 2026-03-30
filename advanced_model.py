@@ -19,5 +19,6 @@ class AdvancedAudioMotorNet(nn.Module):
 
     def hebbian_update(self, x, y):
         # Hebbian rule: outer product
-        hebb = torch.matmul(x.T, y)
-        self.shortcut.weight.data += self.alpha * hebb[:self.shortcut.weight.shape[0], :]
+        
+        hebb = torch.matmul(y.T, x) / x.shape[0]
+        self.shortcut.weight.data += self.alpha * hebb
